@@ -1,0 +1,82 @@
+import spotipy as sp
+import pandas as pd
+from spotipy.oauth2 import SpotifyClientCredentials
+import matplotlib.pyplot as plt
+import  numpy as np
+from sklearn.manifold import TSNE
+import plotly.express as px
+import plotly.graph_objects as go
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+cid = '9cc30b04ddc443d0800a5f35d07d2331'
+secret = '8885545fb86a4b8e9940286031d807e4'
+client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
+sp = sp.Spotify(client_credentials_manager
+=
+client_credentials_manager)
+
+def band_analysis(band_id):
+    band_albums=sp.artist_albums(band_id,album_type='album')
+
+    id=[]
+    name_album=[]
+    date_album=[]
+    name_song=[]
+    duration_ms=[]
+    danceability_feature=[]
+    energy_feature=[]
+    key_feature=[]
+    mode_feature=[]
+    speechiness_feature=[]
+    acousticness_feature=[]
+    instrumentalness_feature=[]
+    liveness_feature=[]
+    valence_feature=[]
+    tempo_feature=[]
+
+    for i in band_albums['items']:
+        x=sp.album(i['id'])
+        for j in x['tracks']['items']:
+            y=sp.audio_features(j['id'])
+            for k in y:
+                id.append(j['id'])
+                name_song.append(j['name'])
+                name_album.append(i['name'])
+                duration_ms.append(k['duration_ms'])
+                date_album.append(i['release_date'])
+                danceability_feature.append(k['danceability'])
+                energy_feature.append(k['energy'])
+                key_feature.append(k['key'])
+                speechiness_feature.append(k['speechiness'])
+                acousticness_feature.append(k['acousticness'])
+                instrumentalness_feature.append(k['instrumentalness'])
+                liveness_feature.append(k['liveness'])
+                valence_feature.append(k['valence'])
+                tempo_feature.append(k['tempo'])
+
+    dataframe_band_albums = pd.DataFrame({'id' : id,
+                                        'name_album':name_album,
+                                        'date_album':date_album,
+                                        'name_song':name_song,
+                                        'duration_ms':duration_ms,
+                                        'danceability' : danceability_feature,
+                                        'energy' : energy_feature,
+                                        'valence' : valence_feature,
+                                        'key_' : key_feature,
+                                        'tempo' : tempo_feature,
+                                        'speechiness' : speechiness_feature,
+                                        'instrumentalness' : instrumentalness_feature,
+                                        'liveness' : liveness_feature})
+    dataframe_band_albums=dataframe_band_albums[dataframe_band_albums['duration_ms']>=60000]
+    dataframe_band_albums['duration_m']=dataframe_band_albums['duration_ms']/60000
+    dataframe_band_albums
+
+    return dataframe_band_albums
+
+df_tyler_creator=band_analysis('4V8LLVI7PbaPR0K2TGSxFF')
+
+
+
+x_values_to_reduction=df_tyler_creator.drop(columns=['id','name_album','date_album','name_song','duration_ms'])
+x_values_to_reduction_2=df_tyler_creator.drop(columns=['id','name_album','date_album','name_song','key_','tempo','duration_ms'])
