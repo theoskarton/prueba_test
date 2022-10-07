@@ -11,6 +11,7 @@ from sklearn.cluster import KMeans
 
 cid = '9cc30b04ddc443d0800a5f35d07d2331'
 secret = '8885545fb86a4b8e9940286031d807e4'
+
 client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
 sp = sp.Spotify(client_credentials_manager
 =
